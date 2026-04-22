@@ -3,6 +3,7 @@ import { ArrowRight, ChevronLeft, ChevronRight, MapPin, Search, Wifi } from "luc
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
+import { AnalyticsPageView, JobsSearchFilterTracker } from "@/components/public/analytics-trackers";
 import { CompanyAvatar } from "@/components/public/company-avatar";
 import { PublicChrome } from "@/components/public/public-chrome";
 import { Badge } from "@/components/ui/badge";
@@ -48,7 +49,8 @@ export default async function JobsPage({
   const selectedCategory = firstValue(params.category);
   const selectedWorkType = firstValue(params.workType);
   const selectedRoleType = firstValue(params.roleType);
-  const selectedSort = normalizeSort(firstValue(params.sort));
+  const sortQuery = firstValue(params.sort);
+  const selectedSort = normalizeSort(sortQuery);
   const requestedPage = normalizePage(firstValue(params.page));
   const offset = (requestedPage - 1) * PAGE_SIZE;
 
@@ -79,6 +81,24 @@ export default async function JobsPage({
 
   return (
     <PublicChrome active="jobs" contentClassName="space-y-8">
+      <AnalyticsPageView
+        page="jobs"
+        path="/jobs"
+        metadata={{
+          page_number: currentPage,
+          total_jobs: total,
+        }}
+      />
+      <JobsSearchFilterTracker
+        keyword={searchQuery}
+        filters={[
+          { name: "category", value: selectedCategory },
+          { name: "location", value: locationQuery },
+          { name: "work_type", value: selectedWorkType },
+          { name: "role_type", value: selectedRoleType },
+          { name: "sort", value: sortQuery },
+        ]}
+      />
       <section className="grid gap-6 xl:grid-cols-[300px_minmax(0,1fr)]">
         <aside className="xl:sticky xl:top-24 xl:self-start">
           <Card className="rounded-[28px] border-white/80 bg-[#eef2ff] py-0 shadow-[0_28px_60px_-48px_rgba(17,24,39,0.26)]">

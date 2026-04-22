@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { AnalyticsPageView } from "@/components/public/analytics-trackers";
 import { PublicChrome } from "@/components/public/public-chrome";
 import { Card, CardContent } from "@/components/ui/card";
 import { getAboutEntries } from "@/lib/api";
@@ -25,6 +26,7 @@ export default async function AboutPage() {
 
   return (
     <PublicChrome active="about" contentClassName="space-y-8 sm:space-y-10">
+      <AnalyticsPageView page="about" path="/about" />
       <section className="mx-auto max-w-5xl space-y-4 text-center">
         <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#4b41e7]">About BrieflyCH</p>
         <h1 className="text-3xl font-black tracking-tight text-[#141b2d] sm:text-5xl">

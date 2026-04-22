@@ -4,6 +4,7 @@ import type {
   AdminJobListItem,
   AdminOverview,
   AdminSource,
+  AnalyticsSummary,
   JobDetail,
   JobCategorySummary,
   JobListItem,
@@ -125,6 +126,27 @@ type BackendHealth = {
   status: string;
   database: string;
   timestamp: string;
+};
+
+type BackendAnalyticsSummary = {
+  window_started_at: string;
+  window_finished_at: string;
+  visitors_today: number;
+  page_views_today: number;
+  job_views_today: number;
+  apply_clicks_today: number;
+  searches_today: number;
+  conversion_rate: number;
+  top_viewed_jobs?: Array<{
+    job_id: number;
+    title: string;
+    company: string;
+    view_count: number;
+  }> | null;
+  top_search_keywords?: Array<{
+    keyword: string;
+    search_count: number;
+  }> | null;
 };
 
 type BackendJobCollectionPayload =
@@ -249,7 +271,10 @@ function formatDisplayValue(value: string) {
   return humanized
     .replace(/\bOn Site\b/g, "On-site")
     .replace(/\bFull Time\b/g, "Full-time")
-    .replace(/\bPart Time\b/g, "Part-time");
+    .replace(/\bPart Time\b/g, "Part-time")
+    .replace(/\bWfo\b/g, "WFO")
+    .replace(/\bWfh\b/g, "WFH")
+    .replace(/\bWfa\b/g, "WFA");
 }
 
 function formatSalaryRange(min?: number | null, max?: number | null, currency?: string) {
@@ -257,19 +282,21 @@ function formatSalaryRange(min?: number | null, max?: number | null, currency?: 
     return undefined;
   }
 
-  const formatter = new Intl.NumberFormat("en-US", {
+  const normalizedCurrency = currency?.trim().toUpperCase();
+  const formatter = new Intl.NumberFormat(normalizedCurrency === "IDR" ? "id-ID" : "en-US", {
     maximumFractionDigits: 0,
   });
+  const prefix = normalizedCurrency === "IDR" ? "Rp " : normalizedCurrency ? `${normalizedCurrency} ` : "";
+  const formatAmount = (value: number) => `${prefix}${formatter.format(value)}`;
 
-  const prefix = currency ? `${currency} ` : "";
   if (min && max) {
-    return `${prefix}${formatter.format(min)} - ${formatter.format(max)}`;
+    return `${formatAmount(min)} - ${formatAmount(max)}`;
   }
   if (min) {
-    return `${prefix}${formatter.format(min)}+`;
+    return `${formatAmount(min)}+`;
   }
 
-  return `${prefix}${formatter.format(max ?? 0)}`;
+  return formatAmount(max ?? 0);
 }
 
 function inferSourceName(sourceId: number, sources: AdminSource[] = []) {
@@ -482,9 +509,9 @@ function emptyOverview(): AdminOverview {
   return {
     totalSources: 0,
     activeSources: 0,
+    publishedJobs: 0,
     normalizedJobs: 0,
-    reviewPendingJobs: 0,
-    duplicateJobs: 0,
+    totalScrapedJobs: 0,
   };
 }
 
@@ -504,6 +531,21 @@ function emptyPipelineStatus(): PipelineStatus {
     scrapeHealthPercentage: 0,
     failedAggregations: 0,
     recentRuns: [],
+  };
+}
+
+function emptyAnalyticsSummary(): AnalyticsSummary {
+  return {
+    windowStartedAt: "",
+    windowFinishedAt: "",
+    visitorsToday: 0,
+    pageViewsToday: 0,
+    jobViewsToday: 0,
+    applyClicksToday: 0,
+    searchesToday: 0,
+    conversionRate: 0,
+    topViewedJobs: [],
+    topSearchKeywords: [],
   };
 }
 
@@ -570,6 +612,11 @@ async function fetchBackendJobsPage(
 async function fetchBackendJobs(limit = 50, options?: JobQueryOptions): Promise<AdminJobListItem[]> {
   const page = await fetchBackendJobsPage(limit, options);
   return page.items;
+}
+
+async function fetchBackendJobsCount(options?: JobQueryOptions): Promise<number> {
+  const collection = unwrapJobCollection(await fetchBackendJobsPayload(1, options));
+  return collection.total ?? collection.items.length;
 }
 
 async function fetchBackendJob(id: number): Promise<AdminJobDetail | null> {
@@ -737,6 +784,34 @@ async function fetchBackendHealth(): Promise<SystemHealth> {
   };
 }
 
+async function fetchBackendAnalyticsSummary(limit = 5): Promise<AnalyticsSummary> {
+  const payload = await fetchJSON<BackendEnvelope<BackendAnalyticsSummary> | BackendAnalyticsSummary>(
+    `/internal/analytics/summary?limit=${limit}`,
+  );
+  const summary = unwrapData<BackendAnalyticsSummary>(payload);
+
+  return {
+    windowStartedAt: summary.window_started_at,
+    windowFinishedAt: summary.window_finished_at,
+    visitorsToday: summary.visitors_today,
+    pageViewsToday: summary.page_views_today,
+    jobViewsToday: summary.job_views_today,
+    applyClicksToday: summary.apply_clicks_today,
+    searchesToday: summary.searches_today,
+    conversionRate: summary.conversion_rate,
+    topViewedJobs: (summary.top_viewed_jobs ?? []).map((job) => ({
+      jobId: job.job_id,
+      title: job.title,
+      company: job.company,
+      viewCount: job.view_count,
+    })),
+    topSearchKeywords: (summary.top_search_keywords ?? []).map((keyword) => ({
+      keyword: keyword.keyword,
+      searchCount: keyword.search_count,
+    })),
+  };
+}
+
 export async function getPublicJobs(): Promise<ApiResult<JobListItem[]>> {
   const result = await getPublicJobsCatalog({ limit: 9 });
   return {
@@ -843,10 +918,22 @@ export async function getJobBySlug(slug: string): Promise<ApiResult<JobDetail | 
 }
 
 export async function getAdminOverview(): Promise<ApiResult<AdminOverview>> {
-  const [sourcesResult, jobsResult] = await Promise.allSettled([fetchBackendSources(), fetchBackendJobs(200)]);
+  const [sourcesResult, totalJobsResult, approvedJobsResult, normalizedJobsResult] = await Promise.allSettled([
+    fetchBackendSources(),
+    fetchBackendJobsCount(),
+    fetchBackendJobsCount({ status: "approved" }),
+    fetchBackendJobsCount({ status: "normalized" }),
+  ]);
   const sources = getSettledValue(sourcesResult) ?? [];
-  const jobs = getSettledValue(jobsResult) ?? [];
-  const errors = [getSettledReason(sourcesResult), getSettledReason(jobsResult)].filter(Boolean);
+  const totalScrapedJobs = getSettledValue(totalJobsResult) ?? 0;
+  const publishedJobs = getSettledValue(approvedJobsResult) ?? 0;
+  const normalizedJobs = getSettledValue(normalizedJobsResult) ?? 0;
+  const errors = [
+    getSettledReason(sourcesResult),
+    getSettledReason(totalJobsResult),
+    getSettledReason(approvedJobsResult),
+    getSettledReason(normalizedJobsResult),
+  ].filter(Boolean);
   if (errors[0]) {
     unstable_rethrow(errors[0]);
   }
@@ -854,15 +941,29 @@ export async function getAdminOverview(): Promise<ApiResult<AdminOverview>> {
   const data: AdminOverview = {
     totalSources: sources.length,
     activeSources: sources.filter((source) => source.active).length,
-    normalizedJobs: jobs.filter((job) => job.status === "normalized" || job.status === "approved").length,
-    reviewPendingJobs: jobs.filter((job) => job.status === "review_pending").length,
-    duplicateJobs: jobs.filter((job) => job.status === "duplicate").length,
+    publishedJobs,
+    normalizedJobs,
+    totalScrapedJobs,
   };
 
   return {
     data: errors.length > 0 ? { ...emptyOverview(), ...data } : data,
     error: errors.length > 0 ? toErrorMessage(errors[0], "Dashboard metrics are partially unavailable.") : undefined,
   };
+}
+
+export async function getAdminAnalyticsSummary(limit = 5): Promise<ApiResult<AnalyticsSummary>> {
+  try {
+    return {
+      data: await fetchBackendAnalyticsSummary(limit),
+    };
+  } catch (error) {
+    unstable_rethrow(error);
+    return {
+      data: emptyAnalyticsSummary(),
+      error: toErrorMessage(error, "Analytics summary could not be loaded from the internal API."),
+    };
+  }
 }
 
 export async function getAdminJobs(options?: {

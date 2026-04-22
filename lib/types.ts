@@ -56,9 +56,34 @@ export type AboutEntry = {
 export type AdminOverview = {
   totalSources: number;
   activeSources: number;
+  publishedJobs: number;
   normalizedJobs: number;
-  reviewPendingJobs: number;
-  duplicateJobs: number;
+  totalScrapedJobs: number;
+};
+
+export type AnalyticsTopViewedJob = {
+  jobId: number;
+  title: string;
+  company: string;
+  viewCount: number;
+};
+
+export type AnalyticsTopSearchKeyword = {
+  keyword: string;
+  searchCount: number;
+};
+
+export type AnalyticsSummary = {
+  windowStartedAt: string;
+  windowFinishedAt: string;
+  visitorsToday: number;
+  pageViewsToday: number;
+  jobViewsToday: number;
+  applyClicksToday: number;
+  searchesToday: number;
+  conversionRate: number;
+  topViewedJobs: AnalyticsTopViewedJob[];
+  topSearchKeywords: AnalyticsTopSearchKeyword[];
 };
 
 export type AdminJobListItem = JobListItem & {

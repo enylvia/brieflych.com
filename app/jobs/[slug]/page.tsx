@@ -13,6 +13,11 @@ import {
   Sparkles,
 } from "lucide-react";
 
+import {
+  AnalyticsJobView,
+  AnalyticsPageView,
+  ApplyLinkButton,
+} from "@/components/public/analytics-trackers";
 import { CompanyAvatar } from "@/components/public/company-avatar";
 import { PublicChrome } from "@/components/public/public-chrome";
 import { Badge } from "@/components/ui/badge";
@@ -124,9 +129,20 @@ export default async function JobDetailPage({
   const jobPostingJsonLd = buildJobPostingJsonLd(job);
   const safeApplyUrl = getSafeExternalUrl(job.sourceApplyUrl);
   const safeSourceJobUrl = getSafeExternalUrl(job.sourceJobUrl);
+  const analyticsPath = `/jobs/${job.slug}`;
+  const jobAnalyticsMetadata = {
+    title: job.title,
+    company: job.company,
+    category: job.category,
+    work_type: job.workType,
+    employment_type: job.employmentType,
+    location: job.location,
+  };
 
   return (
     <PublicChrome active="jobs" contentClassName="space-y-8 sm:space-y-10">
+      <AnalyticsPageView page="job_detail" path={analyticsPath} />
+      <AnalyticsJobView jobId={job.id} path={analyticsPath} metadata={jobAnalyticsMetadata} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jobPostingJsonLd) }}
@@ -160,10 +176,14 @@ export default async function JobDetailPage({
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             {safeApplyUrl ? (
-              <a
+              <ApplyLinkButton
                 href={safeApplyUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+                event={{
+                  event_name: "apply_clicked",
+                  path: analyticsPath,
+                  job_id: job.id,
+                  metadata: jobAnalyticsMetadata,
+                }}
                 className={cn(
                   buttonVariants({ variant: "default", size: "lg" }),
                   "h-11 rounded-xl bg-[#4b41e7] px-6 text-sm text-white shadow-[0_16px_32px_-22px_rgba(75,65,231,0.7)] hover:bg-[#3e35d2]",
@@ -171,7 +191,7 @@ export default async function JobDetailPage({
               >
                 Apply on Source
                 <ExternalLink className="size-4" />
-              </a>
+              </ApplyLinkButton>
             ) : (
               <span
                 className={cn(
