@@ -15,10 +15,13 @@ Frontend production untuk BrieflyCH, berisi public job board dan admin panel int
 Siapkan environment berikut di local atau hosting production:
 
 ```bash
+API_BASE_URL=http://localhost:8080
 NEXT_PUBLIC_API_BASE_URL=http://localhost:8080
 NEXT_PUBLIC_SITE_URL=https://brieflych.com
 ```
 
+`API_BASE_URL` dipakai oleh server-side frontend untuk memanggil backend.
+`NEXT_PUBLIC_API_BASE_URL` bisa disamakan untuk development, tapi production sebaiknya tetap mengutamakan `API_BASE_URL` server-side.
 `NEXT_PUBLIC_SITE_URL` dipakai untuk canonical URL, sitemap, robots, OpenGraph, dan structured data SEO.
 
 ## Development

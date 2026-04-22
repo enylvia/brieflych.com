@@ -12,7 +12,8 @@ import {
   ADMIN_LOGIN_PATH,
 } from "@/lib/auth-constants";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") || "http://localhost:8080";
+const API_BASE_URL =
+  (process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080").replace(/\/$/, "");
 
 export type LoginActionState = {
   message?: string;
@@ -118,8 +119,16 @@ function revalidateAdminViews() {
   revalidatePath("/about");
 }
 
+function resolveAdminRedirectPath(path: string) {
+  if (!path.startsWith("/admin") || path.startsWith("//") || path === ADMIN_LOGIN_PATH) {
+    return ADMIN_DEFAULT_PATH;
+  }
+
+  return path;
+}
+
 function redirectWithNotice(path: string, notice: string, noticeType: "success" | "error") {
-  const target = new URL(`http://local${path.startsWith("/") ? path : `/${path}`}`);
+  const target = new URL(`http://local${resolveAdminRedirectPath(path)}`);
   target.searchParams.set("notice", notice);
   target.searchParams.set("noticeType", noticeType);
   redirect(`${target.pathname}?${target.searchParams.toString()}`);
@@ -162,7 +171,7 @@ export async function loginAdminAction(
 
   await setAdminSession(payload.data);
   revalidatePath("/admin");
-  redirect(nextPath.startsWith("/admin") && nextPath !== ADMIN_LOGIN_PATH ? nextPath : ADMIN_DEFAULT_PATH);
+  redirect(resolveAdminRedirectPath(nextPath));
 }
 
 export async function logoutAdminAction() {

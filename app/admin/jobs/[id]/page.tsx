@@ -7,6 +7,7 @@ import { AdminInlineNotice, AdminNotice, AdminPageIntro, AdminSurface, StatusBad
 import { RichTextContent } from "@/components/job/rich-text";
 import { buttonVariants } from "@/components/ui/button";
 import { getAdminJobById } from "@/lib/api";
+import { getSafeExternalUrl } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
 export default async function AdminJobDetailPage({
@@ -45,6 +46,8 @@ export default async function AdminJobDetailPage({
 
     notFound();
   }
+
+  const safeSourceJobUrl = getSafeExternalUrl(job.sourceJobUrl);
 
   return (
     <>
@@ -169,10 +172,19 @@ export default async function AdminJobDetailPage({
               <MetadataField
                 label="Original URL"
                 value={
-                  <a href={job.sourceJobUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-[#4f46e5] hover:underline">
-                    {formatUrlHost(job.sourceJobUrl)}
-                    <ExternalLink className="size-3.5" />
-                  </a>
+                  safeSourceJobUrl ? (
+                    <a
+                      href={safeSourceJobUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-[#4f46e5] hover:underline"
+                    >
+                      {formatUrlHost(safeSourceJobUrl)}
+                      <ExternalLink className="size-3.5" />
+                    </a>
+                  ) : (
+                    <span className="text-slate-400">Invalid or unavailable source URL</span>
+                  )
                 }
               />
               <div className="grid grid-cols-2 gap-3">

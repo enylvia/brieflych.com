@@ -8,7 +8,8 @@ import {
   ADMIN_LOGIN_PATH,
 } from "@/lib/auth-constants";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") || "http://localhost:8080";
+const API_BASE_URL =
+  (process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080").replace(/\/$/, "");
 
 function redirectToLogin(request: NextRequest, reason?: string) {
   const url = request.nextUrl.clone();
@@ -30,6 +31,9 @@ function redirectToLogin(request: NextRequest, reason?: string) {
 function expireAdminCookies(response: NextResponse) {
   const options = {
     path: ADMIN_AUTH_COOKIE_PATH,
+    httpOnly: true,
+    sameSite: "lax" as const,
+    secure: process.env.NODE_ENV === "production",
     expires: new Date(0),
   };
 

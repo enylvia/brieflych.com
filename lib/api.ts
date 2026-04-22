@@ -19,7 +19,8 @@ import { redirect, unstable_rethrow } from "next/navigation";
 import { ADMIN_AUTH_TOKEN_COOKIE, ADMIN_LOGIN_PATH } from "@/lib/auth-constants";
 import { normalizeListEntry, splitContentLines } from "@/lib/job-content";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") || "http://localhost:8080";
+const API_BASE_URL =
+  (process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080").replace(/\/$/, "");
 
 export type ApiResult<T> = {
   data: T;

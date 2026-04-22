@@ -22,6 +22,7 @@ import { getJobBySlug } from "@/lib/api";
 import { normalizeListEntry, splitContentLines } from "@/lib/job-content";
 import { getSiteUrl, SITE_NAME } from "@/lib/site";
 import type { JobDetail } from "@/lib/types";
+import { getSafeExternalUrl } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
 type JobDetailPageProps = {
@@ -121,6 +122,8 @@ export default async function JobDetailPage({
   const companySize = inferCompanySize(job.employmentType, job.category);
   const industry = inferIndustry(job.category);
   const jobPostingJsonLd = buildJobPostingJsonLd(job);
+  const safeApplyUrl = getSafeExternalUrl(job.sourceApplyUrl);
+  const safeSourceJobUrl = getSafeExternalUrl(job.sourceJobUrl);
 
   return (
     <PublicChrome active="jobs" contentClassName="space-y-8 sm:space-y-10">
@@ -156,18 +159,29 @@ export default async function JobDetailPage({
           </div>
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <a
-              href={job.sourceApplyUrl}
-              target="_blank"
-              rel="noreferrer"
-              className={cn(
-                buttonVariants({ variant: "default", size: "lg" }),
-                "h-11 rounded-xl bg-[#4b41e7] px-6 text-sm text-white shadow-[0_16px_32px_-22px_rgba(75,65,231,0.7)] hover:bg-[#3e35d2]",
-              )}
-            >
-              Apply on Source
-              <ExternalLink className="size-4" />
-            </a>
+            {safeApplyUrl ? (
+              <a
+                href={safeApplyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(
+                  buttonVariants({ variant: "default", size: "lg" }),
+                  "h-11 rounded-xl bg-[#4b41e7] px-6 text-sm text-white shadow-[0_16px_32px_-22px_rgba(75,65,231,0.7)] hover:bg-[#3e35d2]",
+                )}
+              >
+                Apply on Source
+                <ExternalLink className="size-4" />
+              </a>
+            ) : (
+              <span
+                className={cn(
+                  buttonVariants({ variant: "default", size: "lg" }),
+                  "h-11 cursor-not-allowed rounded-xl bg-slate-300 px-6 text-sm text-white",
+                )}
+              >
+                Apply link unavailable
+              </span>
+            )}
             <button
               type="button"
               className="inline-flex h-11 items-center gap-2 rounded-xl border border-[#d9dff0] bg-white px-4 text-sm font-medium text-[#4c5368] hover:bg-[#f7f8ff]"
@@ -290,17 +304,28 @@ export default async function JobDetailPage({
                   <MetaBlock label="Industry" value={industry} />
                 </div>
 
-                <a
-                  href={job.sourceJobUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={cn(
-                    buttonVariants({ variant: "outline", size: "lg" }),
-                    "h-11 w-full rounded-xl border-[#d9dff0] bg-white text-sm text-[#4b41e7] hover:bg-[#f5f7ff]",
-                  )}
-                >
-                  View Company Profile
-                </a>
+                {safeSourceJobUrl ? (
+                  <a
+                    href={safeSourceJobUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cn(
+                      buttonVariants({ variant: "outline", size: "lg" }),
+                      "h-11 w-full rounded-xl border-[#d9dff0] bg-white text-sm text-[#4b41e7] hover:bg-[#f5f7ff]",
+                    )}
+                  >
+                    View Company Profile
+                  </a>
+                ) : (
+                  <span
+                    className={cn(
+                      buttonVariants({ variant: "outline", size: "lg" }),
+                      "h-11 w-full cursor-not-allowed rounded-xl border-[#d9dff0] bg-white text-sm text-[#8b92a6]",
+                    )}
+                  >
+                    Source link unavailable
+                  </span>
+                )}
               </CardContent>
             </Card>
           </div>
