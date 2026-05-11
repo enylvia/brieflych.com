@@ -23,7 +23,7 @@ export default async function PipelinePage({
           <div className="flex items-center gap-2">
             <a
               href="/admin/pipeline"
-              className="rounded-xl bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-[0_16px_28px_-24px_rgba(11,28,48,0.4)] transition-all duration-300 hover:-translate-y-0.5"
+              className="rounded-xl bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-[0_16px_28px_-24px_rgba(11,28,48,0.4)] transition-all duration-300 hover:-translate-y-0.5 dark:bg-slate-900/80 dark:text-slate-200"
             >
               <span className="inline-flex items-center gap-2">
                 <RefreshCcw className="size-4" />
@@ -49,7 +49,7 @@ export default async function PipelinePage({
       <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-[1fr_1.45fr]">
         <AdminSurface className="min-h-[220px]">
           <div className="flex h-full flex-col items-center justify-center text-center">
-            <div className="mb-5 rounded-3xl bg-[#eef3ff] p-6 text-slate-400 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
+            <div className="mb-5 rounded-3xl bg-[#eef3ff] p-6 text-slate-400 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] dark:bg-slate-800/80 dark:text-slate-300 dark:shadow-[inset_0_1px_0_rgba(148,163,184,0.12)]">
               <RefreshCcw className="size-10" />
             </div>
             <p className="text-2xl font-semibold tracking-tight text-slate-900">
@@ -57,19 +57,19 @@ export default async function PipelinePage({
             </p>
             <p className="mt-2 max-w-xs text-sm leading-6 text-slate-500">{status.activeMessage}</p>
             {status.lastError ? (
-              <p className="mt-4 rounded-xl bg-rose-50 px-4 py-2 text-xs text-rose-700 shadow-[0_12px_24px_-20px_rgba(190,24,93,0.28)]">
+              <p className="mt-4 rounded-xl bg-rose-50 px-4 py-2 text-xs text-rose-700 shadow-[0_12px_24px_-20px_rgba(190,24,93,0.28)] dark:bg-rose-950/28 dark:text-rose-200">
                 Last error: {status.lastError}
               </p>
             ) : null}
             {!status.running && !status.lastStartedAt ? (
-              <p className="mt-4 rounded-xl bg-[#eef3ff] px-4 py-2 text-xs text-slate-600 shadow-[0_12px_24px_-20px_rgba(11,28,48,0.18)]">
+              <p className="mt-4 rounded-xl bg-[#eef3ff] px-4 py-2 text-xs text-slate-600 shadow-[0_12px_24px_-20px_rgba(11,28,48,0.18)] dark:bg-slate-800/80 dark:text-slate-300">
                 No worker execution snapshot has been recorded yet.
               </p>
             ) : null}
           </div>
         </AdminSurface>
 
-        <AdminSurface title="Last 24 Hours" className="bg-gradient-to-br from-white to-[#eef3ff]">
+        <AdminSurface title="Last 24 Hours" className="bg-gradient-to-br from-white to-[#eef3ff] dark:from-slate-900/95 dark:to-indigo-950/32">
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <MetricCard
               label="Total Jobs Collected"
@@ -105,11 +105,11 @@ export default async function PipelinePage({
       <div className="mt-6">
         <AdminSurface title="Recent Runs">
           {status.recentRuns.length === 0 ? (
-            <div className="rounded-2xl bg-[#eff4ff] px-6 py-12 text-center text-sm text-slate-500">
+            <div className="rounded-2xl bg-[#eff4ff] px-6 py-12 text-center text-sm text-slate-500 dark:bg-slate-950/40">
               No worker run history has been returned yet.
             </div>
           ) : (
-            <div className="overflow-hidden rounded-2xl bg-[#eff4ff] p-2">
+            <div className="overflow-hidden rounded-2xl bg-[#eff4ff] p-2 dark:bg-slate-950/40">
               <div className="hidden grid-cols-[0.7fr_1fr_0.8fr_0.8fr_1fr_1fr_1fr] gap-3 px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 xl:grid">
                 <div>Run ID</div>
                 <div>Start Time</div>
@@ -124,7 +124,7 @@ export default async function PipelinePage({
                 {status.recentRuns.map((run, index) => (
                   <div
                     key={run.id}
-                    className="admin-card-hover grid grid-cols-1 gap-3 rounded-xl bg-white px-4 py-4 shadow-[0_14px_28px_-22px_rgba(11,28,48,0.3)] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 xl:grid-cols-[0.7fr_1fr_0.8fr_0.8fr_1fr_1fr_1fr]"
+                    className="admin-card-hover grid grid-cols-1 gap-3 rounded-xl bg-white px-4 py-4 shadow-[0_14px_28px_-22px_rgba(11,28,48,0.3)] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 dark:bg-slate-900/84 xl:grid-cols-[0.7fr_1fr_0.8fr_0.8fr_1fr_1fr_1fr]"
                     style={{ animationDuration: `${220 + index * 65}ms` }}
                   >
                     <div className="flex items-center justify-between gap-3 font-semibold text-slate-700 xl:block">

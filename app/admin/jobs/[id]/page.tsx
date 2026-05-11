@@ -19,7 +19,7 @@ export default async function AdminJobDetailPage({
 }) {
   const { id } = await params;
   const pageParams = (await searchParams) ?? {};
-  const { data: job, error } = await getAdminJobById(Number(id));
+  const { data: job, error } = await getAdminJobById(id);
 
   if (!job) {
     if (error) {
@@ -35,7 +35,7 @@ export default async function AdminJobDetailPage({
 
           <div className="mt-6">
             <AdminSurface>
-              <div className="rounded-2xl bg-[#eff4ff] px-6 py-12 text-center text-sm text-slate-500">
+              <div className="rounded-2xl bg-[#eff4ff] px-6 py-12 text-center text-sm text-slate-500 dark:bg-slate-950/40">
                 Detail job tidak bisa dimuat dari internal API saat ini.
               </div>
             </AdminSurface>
@@ -65,14 +65,14 @@ export default async function AdminJobDetailPage({
             href="/admin/jobs"
             className={cn(
               buttonVariants({ variant: "ghost", size: "sm" }),
-              "rounded-xl bg-white/70 px-3 text-slate-600 shadow-[0_14px_28px_-24px_rgba(11,28,48,0.4)] hover:bg-white",
+              "rounded-xl bg-white/70 px-3 text-slate-600 shadow-[0_14px_28px_-24px_rgba(11,28,48,0.4)] hover:bg-white dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800",
             )}
           >
             <ArrowLeft className="size-4" />
             Back to Pipeline
           </Link>
-          <span className="rounded-lg bg-[#eef3ff] px-3 py-1 text-xs font-semibold tracking-[0.18em] text-slate-500">
-            ID: JOB-{job.id}
+          <span className="rounded-lg bg-[#eef3ff] px-3 py-1 text-xs font-semibold tracking-[0.18em] text-slate-500 dark:bg-slate-800/90 dark:text-slate-300">
+            ID: JOB-{formatJobId(job.id)}
           </span>
         </div>
 
@@ -86,7 +86,7 @@ export default async function AdminJobDetailPage({
           <button
             type="button"
             disabled
-            className="inline-flex items-center gap-2 rounded-xl bg-white/80 px-4 py-2.5 text-sm font-medium text-[#a44100]/65 shadow-[0_16px_28px_-24px_rgba(11,28,48,0.4)]"
+            className="inline-flex items-center gap-2 rounded-xl bg-white/80 px-4 py-2.5 text-sm font-medium text-[#a44100]/65 shadow-[0_16px_28px_-24px_rgba(11,28,48,0.4)] dark:bg-slate-900/70 dark:text-amber-300/70"
           >
             <Copy className="size-4" />
             Mark as Duplicate
@@ -124,7 +124,7 @@ export default async function AdminJobDetailPage({
               {job.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-md bg-[#eef3ff] px-3 py-1.5 text-xs font-medium text-slate-600 shadow-[0_8px_20px_-18px_rgba(11,28,48,0.3)]"
+                  className="rounded-md bg-[#eef3ff] px-3 py-1.5 text-xs font-medium text-slate-600 shadow-[0_8px_20px_-18px_rgba(11,28,48,0.3)] dark:bg-slate-800/90 dark:text-slate-300"
                 >
                   {tag}
                 </span>
@@ -166,7 +166,7 @@ export default async function AdminJobDetailPage({
         </div>
 
         <div className="space-y-6">
-          <AdminSurface title="Aggregation Metadata" className="bg-gradient-to-br from-white to-[#eef3ff]">
+          <AdminSurface title="Aggregation Metadata" className="bg-gradient-to-br from-white to-[#eef3ff] dark:from-slate-900/95 dark:to-indigo-950/32">
             <div className="space-y-4 text-sm text-slate-600">
               <MetadataField label="Source Website" value={job.sourceWebsite} />
               <MetadataField
@@ -194,26 +194,26 @@ export default async function AdminJobDetailPage({
             </div>
           </AdminSurface>
 
-          <AdminSurface title="Quality Analysis" className="bg-gradient-to-br from-white to-[#edf5ff]">
+          <AdminSurface title="Quality Analysis" className="bg-gradient-to-br from-white to-[#edf5ff] dark:from-slate-900/95 dark:to-sky-950/30">
             <div className="space-y-4">
               <div>
                 <div className="mb-2 flex items-center justify-between text-sm text-slate-600">
                   <span>Parse Confidence</span>
                   <span className="font-semibold text-emerald-600">{job.parseConfidence}%</span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-[#dfe8ff]">
+                <div className="h-2 overflow-hidden rounded-full bg-[#dfe8ff] dark:bg-slate-800">
                   <div className="pipeline-bar h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-500" style={{ width: `${job.parseConfidence}%` }} />
                 </div>
               </div>
 
               {job.duplicateMatch ? (
-                <div className="rounded-xl border border-[#ffd9bf] bg-[#fff7f2] p-4 text-sm text-[#8a4510] shadow-[0_16px_30px_-26px_rgba(164,65,0,0.35)]">
+                <div className="rounded-xl border border-[#ffd9bf] bg-[#fff7f2] p-4 text-sm text-[#8a4510] shadow-[0_16px_30px_-26px_rgba(164,65,0,0.35)] dark:border-amber-500/25 dark:bg-amber-950/24 dark:text-amber-200">
                   <div className="flex items-start gap-3">
                     <ShieldAlert className="mt-0.5 size-4 shrink-0" />
                     <div>
                       <p className="font-semibold">Duplicate Warning</p>
-                      <p className="mt-1">95% match with Job #{job.duplicateMatch}</p>
-                      <p className="mt-1 text-xs text-[#a75a1e]">{job.duplicateReference}</p>
+                      <p className="mt-1">95% match with Job #{formatJobId(job.duplicateMatch)}</p>
+                      <p className="mt-1 text-xs text-[#a75a1e] dark:text-amber-300/75">{job.duplicateReference}</p>
                     </div>
                   </div>
                 </div>
@@ -221,7 +221,7 @@ export default async function AdminJobDetailPage({
 
               <div className="flex flex-wrap gap-2">
                 {job.extractedEntities.map((entity) => (
-                  <span key={entity} className="rounded-md bg-white px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 shadow-[0_10px_24px_-20px_rgba(11,28,48,0.35)]">
+                  <span key={entity} className="rounded-md bg-white px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 shadow-[0_10px_24px_-20px_rgba(11,28,48,0.35)] dark:bg-slate-800/90 dark:text-slate-300">
                     {entity.replaceAll("_", " ")}
                   </span>
                 ))}
@@ -236,7 +236,7 @@ export default async function AdminJobDetailPage({
 
 function MetadataField({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="rounded-xl bg-white/80 p-3 shadow-[0_14px_28px_-24px_rgba(11,28,48,0.28)]">
+    <div className="rounded-xl bg-white/80 p-3 shadow-[0_14px_28px_-24px_rgba(11,28,48,0.28)] dark:bg-slate-950/35 dark:ring-1 dark:ring-slate-700/60">
       <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">{label}</p>
       <div className="mt-2 text-sm font-medium text-slate-700">{value}</div>
     </div>
@@ -252,7 +252,7 @@ function StatusActionForm({
   icon,
   children,
 }: {
-  jobId: number;
+  jobId: string;
   redirectTo: string;
   statusAction: "approve" | "reject" | "archive";
   disabled?: boolean;
@@ -272,7 +272,7 @@ function StatusActionForm({
           "inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-300",
           primary
             ? "bg-gradient-to-r from-[#3525cd] to-[#4f46e5] text-white shadow-[0_18px_34px_-18px_rgba(53,37,205,0.75)] hover:-translate-y-0.5 hover:shadow-[0_24px_40px_-18px_rgba(53,37,205,0.85)]"
-            : "bg-white text-slate-700 shadow-[0_16px_28px_-24px_rgba(11,28,48,0.4)] hover:-translate-y-0.5 hover:bg-white",
+            : "bg-white text-slate-700 shadow-[0_16px_28px_-24px_rgba(11,28,48,0.4)] hover:-translate-y-0.5 hover:bg-white dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800",
           disabled && "cursor-not-allowed opacity-50 hover:translate-y-0",
         )}
       >
@@ -303,6 +303,10 @@ function getStatusTone(status: string) {
 
 function formatStatus(value: string) {
   return value.split("_").join(" ").replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function formatJobId(value: string | number) {
+  return String(value).slice(0, 8);
 }
 
 function formatUrlHost(value: string) {

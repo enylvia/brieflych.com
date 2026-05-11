@@ -101,7 +101,7 @@ export default async function JobsPage({
       />
       <section className="grid gap-6 xl:grid-cols-[300px_minmax(0,1fr)]">
         <aside className="xl:sticky xl:top-24 xl:self-start">
-          <Card className="rounded-[28px] border-white/80 bg-[#eef2ff] py-0 shadow-[0_28px_60px_-48px_rgba(17,24,39,0.26)]">
+          <Card className="rounded-[28px] border-white/80 bg-[#eef2ff] py-0 shadow-[0_28px_60px_-48px_rgba(17,24,39,0.26)] dark:border-slate-700/70 dark:bg-slate-900/78">
             <CardContent className="px-5 py-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-[#141b2d]">Filters</h2>
@@ -210,7 +210,7 @@ export default async function JobsPage({
             </div>
           ) : null}
 
-          <Card className="rounded-[30px] border-white/80 bg-white/92 py-0 shadow-[0_34px_80px_-48px_rgba(17,24,39,0.3)]">
+          <Card className="rounded-[30px] border-white/80 bg-white/92 py-0 shadow-[0_34px_80px_-48px_rgba(17,24,39,0.3)] dark:border-slate-700/70 dark:bg-slate-900/78">
             <CardContent className="px-0">
               {total === 0 ? (
                 <div className="flex min-h-[420px] flex-col items-center justify-center px-6 py-16 text-center">
@@ -262,7 +262,7 @@ export default async function JobsPage({
                   <div className="divide-y divide-[#edf0f7]">
                     {jobs.map((job) => (
                       <div
-                        key={job.slug}
+                        key={job.id}
                         className="grid gap-5 px-6 py-5 lg:grid-cols-[2.15fr_1.1fr_0.85fr_1fr_0.8fr] lg:items-center"
                       >
                         <div className="flex items-start gap-4">
@@ -278,7 +278,7 @@ export default async function JobsPage({
                             <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-[#6f768b] sm:text-sm">
                               <span>{job.company}</span>
                               <span className="text-[#bcc2d4]">/</span>
-                              <Badge className="rounded-full bg-[#eefcf3] text-[#28915b] hover:bg-[#eefcf3]">
+                              <Badge className="rounded-full bg-[#eefcf3] text-[#28915b] hover:bg-[#eefcf3] dark:bg-emerald-500/14 dark:text-emerald-200 dark:hover:bg-emerald-500/18">
                                 {job.category}
                               </Badge>
                             </div>
@@ -320,7 +320,7 @@ export default async function JobsPage({
                             Action
                           </p>
                           <Link
-                            href={`/jobs/${job.slug}`}
+                            href={`/jobs/${job.id}`}
                             className="inline-flex items-center gap-2 text-xs font-semibold text-[#4b41e7] hover:text-[#3e35d2] sm:text-sm"
                           >
                             View Details
@@ -354,7 +354,7 @@ export default async function JobsPage({
                               "flex size-10 items-center justify-center rounded-lg text-sm font-semibold transition-colors",
                               entry === currentPage
                                 ? "bg-[#4b41e7] text-white shadow-[0_16px_30px_-22px_rgba(75,65,231,0.75)]"
-                                : "text-[#5e667c] hover:bg-[#eef2ff]",
+                                : "text-[#5e667c] hover:bg-[#eef2ff] dark:text-slate-300 dark:hover:bg-slate-800/86",
                             )}
                           >
                             {entry}
@@ -434,7 +434,7 @@ function PaginationNavLink({
   return (
     <Link
       href={href}
-      className="inline-flex items-center gap-2 rounded-lg border border-[#dfe4f2] px-4 py-2.5 text-sm font-medium text-[#4c5368] transition-colors hover:bg-[#f5f7ff]"
+      className="inline-flex items-center gap-2 rounded-lg border border-[#dfe4f2] px-4 py-2.5 text-sm font-medium text-[#4c5368] transition-colors hover:bg-[#f5f7ff] dark:border-slate-700/70 dark:text-slate-300 dark:hover:bg-slate-800/86"
     >
       {children}
     </Link>

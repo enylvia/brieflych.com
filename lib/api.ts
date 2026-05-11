@@ -35,7 +35,7 @@ type BackendEnvelope<T> = {
 };
 
 type BackendJob = {
-  id: number;
+  id: string;
   source_id: number;
   source_job_url: string;
   source_apply_url: string;
@@ -59,7 +59,7 @@ type BackendJob = {
   posted_at?: string | null;
   status: string;
   created_at: string;
-  duplicate_of_job_id?: number | null;
+  duplicate_of_job_id?: string | null;
 };
 
 type BackendCategorySummary = {
@@ -138,7 +138,7 @@ type BackendAnalyticsSummary = {
   searches_today: number;
   conversion_rate: number;
   top_viewed_jobs?: Array<{
-    job_id: number;
+    job_id: string;
     title: string;
     company: string;
     view_count: number;
@@ -341,7 +341,7 @@ function mapBackendJobToList(job: BackendJob, sources: AdminSource[] = []): Admi
   const summarySource = splitParagraphs(job.description)[0] ?? "Incoming normalized job listing.";
 
   return {
-    id: job.id,
+    id: String(job.id),
     slug: job.slug,
     title: job.title,
     company: job.company,
@@ -619,10 +619,10 @@ async function fetchBackendJobsCount(options?: JobQueryOptions): Promise<number>
   return collection.total ?? collection.items.length;
 }
 
-async function fetchBackendJob(id: number): Promise<AdminJobDetail | null> {
+async function fetchBackendJob(id: string): Promise<AdminJobDetail | null> {
   try {
     const [payload, sources] = await Promise.all([
-      fetchJSON<BackendEnvelope<BackendJob> | BackendJob>(`/internal/jobs/${id}`),
+      fetchJSON<BackendEnvelope<BackendJob> | BackendJob>(`/internal/jobs/${encodeURIComponent(id)}`),
       fetchBackendSources().catch(() => []),
     ]);
     const job = unwrapData<BackendJob>(payload);
@@ -637,77 +637,17 @@ async function fetchBackendJob(id: number): Promise<AdminJobDetail | null> {
   }
 }
 
-async function fetchBackendJobBySlug(slug: string): Promise<JobDetail | null> {
-  const sourcesPromise = fetchBackendSources().catch(() => []);
-  let matchedJob: BackendJob | undefined;
-
+async function fetchBackendPublicJob(id: string): Promise<JobDetail | null> {
   try {
-    const searchedCollection = unwrapJobCollection(await fetchBackendJobsPayload(50, { search: slug }));
-    matchedJob = searchedCollection.items.find((job) => job.slug === slug);
+    return await fetchBackendJob(id);
   } catch (error) {
     unstable_rethrow(error);
-    if (!isNotFoundError(error)) {
-      throw error;
+    if (isNotFoundError(error)) {
+      return null;
     }
+
+    throw error;
   }
-
-  if (!matchedJob) {
-    const pageSize = 100;
-    let offset = 0;
-    let total = Number.POSITIVE_INFINITY;
-
-    while (!matchedJob && offset < total) {
-      let collection: ReturnType<typeof unwrapJobCollection>;
-      try {
-        collection = unwrapJobCollection(await fetchBackendJobsPayload(pageSize, { offset }));
-      } catch (error) {
-        unstable_rethrow(error);
-        if (isNotFoundError(error)) {
-          break;
-        }
-        throw error;
-      }
-
-      matchedJob = collection.items.find((job) => job.slug === slug);
-      if (matchedJob || collection.items.length === 0) {
-        break;
-      }
-
-      total = collection.total ?? collection.items.length;
-      offset += collection.items.length;
-    }
-  }
-
-  if (!matchedJob) {
-    return null;
-  }
-
-  const sources = await sourcesPromise;
-  const detail = mapBackendJobToDetail(matchedJob, sources);
-  return {
-    id: detail.id,
-    slug: detail.slug,
-    title: detail.title,
-    company: detail.company,
-    location: detail.location,
-    category: detail.category,
-    workType: detail.workType,
-    roleType: detail.roleType,
-    employmentType: detail.employmentType,
-    companyProfileImageUrl: detail.companyProfileImageUrl,
-    summary: detail.summary,
-    salaryRange: detail.salaryRange,
-    description: detail.description,
-    requirements: detail.requirements,
-    benefits: detail.benefits,
-    sourceApplyUrl: detail.sourceApplyUrl,
-    sourceJobUrl: detail.sourceJobUrl,
-    postedAt: detail.postedAt,
-    sourceName: detail.sourceName,
-    sourceWebsite: detail.sourceWebsite,
-    workplaceType: detail.workplaceType,
-    tags: detail.tags,
-  };
 }
 
 async function fetchBackendSources(): Promise<AdminSource[]> {
@@ -800,7 +740,7 @@ async function fetchBackendAnalyticsSummary(limit = 5): Promise<AnalyticsSummary
     searchesToday: summary.searches_today,
     conversionRate: summary.conversion_rate,
     topViewedJobs: (summary.top_viewed_jobs ?? []).map((job) => ({
-      jobId: job.job_id,
+      jobId: String(job.job_id),
       title: job.title,
       company: job.company,
       viewCount: job.view_count,
@@ -903,10 +843,10 @@ export async function getPublicJobCategories(): Promise<ApiResult<JobCategorySum
   }
 }
 
-export async function getJobBySlug(slug: string): Promise<ApiResult<JobDetail | null>> {
+export async function getJobById(id: string): Promise<ApiResult<JobDetail | null>> {
   try {
     return {
-      data: await fetchBackendJobBySlug(slug),
+      data: await fetchBackendPublicJob(id),
     };
   } catch (error) {
     unstable_rethrow(error);
@@ -915,6 +855,10 @@ export async function getJobBySlug(slug: string): Promise<ApiResult<JobDetail | 
       error: toErrorMessage(error, "Job detail could not be loaded from the internal API."),
     };
   }
+}
+
+export async function getJobBySlug(slug: string): Promise<ApiResult<JobDetail | null>> {
+  return getJobById(slug);
 }
 
 export async function getAdminOverview(): Promise<ApiResult<AdminOverview>> {
@@ -1034,7 +978,7 @@ export async function getAdminJobsPage(options?: {
   }
 }
 
-export async function getAdminJobById(id: number): Promise<ApiResult<AdminJobDetail | null>> {
+export async function getAdminJobById(id: string): Promise<ApiResult<AdminJobDetail | null>> {
   try {
     return {
       data: await fetchBackendJob(id),

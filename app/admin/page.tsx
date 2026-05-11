@@ -8,6 +8,7 @@ import {
   Search,
   UsersRound,
 } from "lucide-react";
+import Link from "next/link";
 
 import { runPipelineAction } from "@/app/admin/actions";
 import { AdminInlineNotice, AdminNotice, AdminPageIntro, AdminSurface, MetricCard, StatusBadge } from "@/components/admin/admin-primitives";
@@ -114,7 +115,7 @@ export default async function AdminPage({
           </div>
 
           <div className="mt-5 grid gap-4 lg:grid-cols-2">
-            <div className="rounded-2xl bg-[#eff4ff] p-4">
+            <div className="rounded-2xl bg-[#eff4ff] p-4 dark:bg-slate-950/40">
               <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                 Top Viewed Jobs
               </h4>
@@ -125,24 +126,25 @@ export default async function AdminPage({
                   </p>
                 ) : (
                   analytics.topViewedJobs.map((job) => (
-                    <div
+                    <Link
                       key={job.jobId}
+                      href={`/admin/jobs/${job.jobId}`}
                       className="flex items-center justify-between gap-4 rounded-xl bg-white px-4 py-3 text-sm shadow-[0_10px_20px_-16px_rgba(11,28,48,0.18)]"
                     >
                       <div className="min-w-0">
                         <p className="truncate font-semibold text-slate-800">{job.title}</p>
                         <p className="truncate text-xs text-slate-500">{job.company}</p>
                       </div>
-                      <span className="shrink-0 rounded-lg bg-[#eef2ff] px-2.5 py-1 text-xs font-bold text-[#4f46e5]">
+                      <span className="shrink-0 rounded-lg bg-[#eef2ff] px-2.5 py-1 text-xs font-bold text-[#4f46e5] dark:bg-indigo-500/15 dark:text-indigo-200">
                         {job.viewCount}
                       </span>
-                    </div>
+                    </Link>
                   ))
                 )}
               </div>
             </div>
 
-            <div className="rounded-2xl bg-[#eff4ff] p-4">
+            <div className="rounded-2xl bg-[#eff4ff] p-4 dark:bg-slate-950/40">
               <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                 Top Search Keywords
               </h4>
@@ -158,7 +160,7 @@ export default async function AdminPage({
                       className="flex items-center justify-between gap-4 rounded-xl bg-white px-4 py-3 text-sm shadow-[0_10px_20px_-16px_rgba(11,28,48,0.18)]"
                     >
                       <p className="truncate font-semibold text-slate-800">{keyword.keyword}</p>
-                      <span className="shrink-0 rounded-lg bg-[#eef2ff] px-2.5 py-1 text-xs font-bold text-[#4f46e5]">
+                      <span className="shrink-0 rounded-lg bg-[#eef2ff] px-2.5 py-1 text-xs font-bold text-[#4f46e5] dark:bg-indigo-500/15 dark:text-indigo-200">
                         {keyword.searchCount}
                       </span>
                     </div>
@@ -178,11 +180,11 @@ export default async function AdminPage({
             </p>
 
             {jobs.length === 0 ? (
-              <div className="rounded-2xl bg-[#eff4ff] px-6 py-10 text-center text-sm text-slate-500">
+              <div className="rounded-2xl bg-[#eff4ff] px-6 py-10 text-center text-sm text-slate-500 dark:bg-slate-950/40">
                 Belum ada snapshot job yang bisa ditampilkan dari internal API.
               </div>
             ) : (
-              <div className="overflow-hidden rounded-xl bg-[#eff4ff] p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
+              <div className="overflow-hidden rounded-xl bg-[#eff4ff] p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)] dark:bg-slate-950/40 dark:shadow-[inset_0_1px_0_rgba(148,163,184,0.12)]">
                 <div className="hidden grid-cols-[1.6fr_1fr_1fr_1fr] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 lg:grid">
                   <div>Job</div>
                   <div>Source</div>
@@ -191,7 +193,7 @@ export default async function AdminPage({
                 </div>
                 <div className="space-y-1">
                   {jobs.slice(0, 4).map((job) => (
-                    <div key={job.id} className="admin-card-hover grid grid-cols-1 gap-3 rounded-lg bg-white px-4 py-3 text-sm shadow-[0_10px_20px_-16px_rgba(11,28,48,0.16)] lg:grid-cols-[1.6fr_1fr_1fr_1fr] lg:items-center lg:gap-0 lg:py-2.5">
+                    <Link key={job.id} href={`/admin/jobs/${job.id}`} className="admin-card-hover grid grid-cols-1 gap-3 rounded-lg bg-white px-4 py-3 text-sm shadow-[0_10px_20px_-16px_rgba(11,28,48,0.16)] lg:grid-cols-[1.6fr_1fr_1fr_1fr] lg:items-center lg:gap-0 lg:py-2.5">
                       <div>
                         <p className="font-medium text-slate-800">{job.title}</p>
                         <p className="text-xs text-slate-500">{job.company}</p>
@@ -208,7 +210,7 @@ export default async function AdminPage({
                         <span className="text-[11px] uppercase tracking-[0.16em] text-slate-400 lg:hidden">Collected</span>
                         {formatDateTime(job.collectedAt)}
                       </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </div>

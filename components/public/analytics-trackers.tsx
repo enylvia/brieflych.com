@@ -33,7 +33,7 @@ export function AnalyticsJobView({
   path,
   metadata,
 }: {
-  jobId: number;
+  jobId: string;
   path: string;
   metadata: Record<string, unknown>;
 }) {

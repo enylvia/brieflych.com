@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import { logoutAdminAction } from "@/app/admin/actions";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { cn } from "@/lib/utils";
 
 const navigationItems = [
@@ -45,7 +46,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <main className="min-h-screen bg-[#f8f9ff] text-[#0b1c30]">
+    <main className="admin-shell min-h-screen bg-[#f8f9ff] text-[#0b1c30] transition-colors duration-300">
       <aside className="hidden h-screen w-64 flex-col border-r border-white/60 bg-[#eff4ff] px-4 py-4 shadow-[inset_-1px_0_0_rgba(255,255,255,0.35)] md:fixed md:left-0 md:top-0 md:flex">
         <div className="mb-8 flex items-center gap-3 px-2">
           <div className="flex size-8 items-center justify-center rounded-md bg-[#3525cd] text-sm font-bold text-white shadow-[0_10px_24px_-14px_rgba(53,37,205,0.75)]">
@@ -144,6 +145,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
               </button>
               <h1 className="truncate text-xl font-black tracking-tight text-slate-900">{pageTitle}</h1>
             </div>
+            <ThemeToggle />
           </div>
         </header>
 
@@ -177,8 +179,8 @@ function AdminNavLink({
       className={cn(
         "group flex scale-[0.985] items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold tracking-tight transition-all duration-300 hover:scale-100",
         active
-          ? "bg-white text-[#4f46e5] shadow-[0_10px_24px_-18px_rgba(11,28,48,0.45)]"
-          : "text-slate-500 hover:bg-indigo-50/70 hover:text-[#4f46e5]",
+          ? "bg-white text-[#4f46e5] shadow-[0_10px_24px_-18px_rgba(11,28,48,0.45)] dark:bg-indigo-500/16 dark:text-indigo-200"
+          : "text-slate-500 hover:bg-indigo-50/70 hover:text-[#4f46e5] dark:text-slate-300 dark:hover:bg-slate-800/88 dark:hover:text-indigo-200",
         "motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-left-2",
       )}
       style={style}
@@ -200,7 +202,7 @@ function FooterAction({
     <form action={logoutAdminAction}>
       <button
         type="submit"
-        className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-500 transition-colors duration-300 hover:bg-white/60 hover:text-[#4f46e5]"
+        className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-500 transition-colors duration-300 hover:bg-white/60 hover:text-[#4f46e5] dark:text-slate-300 dark:hover:bg-slate-800/88 dark:hover:text-indigo-200"
       >
         <Icon className="size-4" />
         {label}

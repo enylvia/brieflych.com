@@ -44,7 +44,7 @@ export default async function SettingsPage({
           className="xl:self-start"
         >
           {entries.length === 0 ? (
-            <div className="rounded-2xl bg-[#eff4ff] px-4 py-8 text-center text-sm text-slate-500">
+            <div className="rounded-2xl bg-[#eff4ff] px-4 py-8 text-center text-sm text-slate-500 dark:bg-slate-950/40">
               No about sections returned by the internal API yet.
             </div>
           ) : (
@@ -58,8 +58,8 @@ export default async function SettingsPage({
                     href={`/admin/settings?entryId=${entry.id}`}
                     className={`block rounded-2xl border px-4 py-4 transition-colors ${
                       active
-                        ? "border-[#cfcaff] bg-[#eef2ff]"
-                        : "border-[#e3e9f8] bg-[#f8faff] hover:border-[#d4ddf4] hover:bg-white"
+                        ? "border-[#cfcaff] bg-[#eef2ff] dark:border-indigo-400/30 dark:bg-indigo-950/28"
+                        : "border-[#e3e9f8] bg-[#f8faff] hover:border-[#d4ddf4] hover:bg-white dark:border-slate-700/70 dark:bg-slate-900/76 dark:hover:border-slate-600 dark:hover:bg-slate-800/80"
                     }`}
                   >
                     <div className="flex items-start justify-between gap-3">
@@ -128,7 +128,7 @@ export default async function SettingsPage({
             }
           >
             {!selectedEntry ? (
-              <div className="rounded-2xl bg-[#eff4ff] px-4 py-10 text-center text-sm text-slate-500">
+              <div className="rounded-2xl bg-[#eff4ff] px-4 py-10 text-center text-sm text-slate-500 dark:bg-slate-950/40">
                 No about section selected yet.
               </div>
             ) : (
@@ -179,7 +179,7 @@ export default async function SettingsPage({
                   <input type="hidden" name="aboutId" value={selectedEntry.id} />
                   <button
                     type="submit"
-                    className="inline-flex h-11 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-5 text-sm font-medium text-rose-700 transition-colors hover:bg-rose-100"
+                    className="inline-flex h-11 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-5 text-sm font-medium text-rose-700 transition-colors hover:bg-rose-100 dark:border-rose-500/30 dark:bg-rose-950/28 dark:text-rose-200 dark:hover:bg-rose-950/42"
                   >
                     Delete Section
                   </button>

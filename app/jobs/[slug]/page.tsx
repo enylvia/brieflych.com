@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import {
-  Bookmark,
   BriefcaseBusiness,
   Gift,
   Building2,
@@ -23,7 +22,7 @@ import { PublicChrome } from "@/components/public/public-chrome";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getJobBySlug } from "@/lib/api";
+import { getJobById } from "@/lib/api";
 import { normalizeListEntry, splitContentLines } from "@/lib/job-content";
 import { getSiteUrl, SITE_NAME } from "@/lib/site";
 import type { JobDetail } from "@/lib/types";
@@ -36,7 +35,7 @@ type JobDetailPageProps = {
 
 export async function generateMetadata({ params }: JobDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const { data: job } = await getJobBySlug(slug);
+  const { data: job } = await getJobById(slug);
 
   if (!job) {
     return {
@@ -49,7 +48,7 @@ export async function generateMetadata({ params }: JobDetailPageProps): Promise<
   }
 
   const description = truncateText(job.summary || firstParagraph(job.description), 155);
-  const canonical = `/jobs/${job.slug}`;
+  const canonical = `/jobs/${job.id}`;
 
   return {
     title: `${job.title} at ${job.company}`,
@@ -76,7 +75,7 @@ export default async function JobDetailPage({
   params,
 }: JobDetailPageProps) {
   const { slug } = await params;
-  const { data: job, error } = await getJobBySlug(slug);
+  const { data: job, error } = await getJobById(slug);
 
   if (!job) {
     if (error) {
@@ -129,7 +128,7 @@ export default async function JobDetailPage({
   const jobPostingJsonLd = buildJobPostingJsonLd(job);
   const safeApplyUrl = getSafeExternalUrl(job.sourceApplyUrl);
   const safeSourceJobUrl = getSafeExternalUrl(job.sourceJobUrl);
-  const analyticsPath = `/jobs/${job.slug}`;
+  const analyticsPath = `/jobs/${job.id}`;
   const jobAnalyticsMetadata = {
     title: job.title,
     company: job.company,
@@ -202,13 +201,12 @@ export default async function JobDetailPage({
                 Apply link unavailable
               </span>
             )}
-            <button
-              type="button"
-              className="inline-flex h-11 items-center gap-2 rounded-xl border border-[#d9dff0] bg-white px-4 text-sm font-medium text-[#4c5368] hover:bg-[#f7f8ff]"
+            <Link
+              href={`/career-tools/job-match?job_id=${job.id}&job_title=${encodeURIComponent(job.title)}`}
+              className="inline-flex h-11 items-center gap-2 rounded-xl border border-[#d9dff0] bg-white px-4 text-sm font-medium text-[#4b41e7] hover:bg-[#f7f8ff] dark:border-slate-700/70 dark:bg-slate-900/78 dark:text-indigo-200 dark:hover:bg-slate-800/86"
             >
-              <Bookmark className="size-4" />
-              Save
-            </button>
+              Match CV
+            </Link>
           </div>
         </div>
 
@@ -263,7 +261,7 @@ export default async function JobDetailPage({
           </div>
 
           <div className="space-y-5 xl:sticky xl:top-24 xl:self-start">
-            <Card className="rounded-[22px] border-white/80 bg-[#eef2ff] py-0 shadow-[0_10px_24px_-24px_rgba(17,24,39,0.14)]">
+            <Card className="rounded-[22px] border-white/80 bg-[#eef2ff] py-0 shadow-[0_10px_24px_-24px_rgba(17,24,39,0.14)] dark:border-slate-700/70 dark:bg-slate-900/78">
               <CardHeader className="px-5 py-5">
                 <CardTitle className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#5f667b]">
                   At A Glance
@@ -286,7 +284,7 @@ export default async function JobDetailPage({
                       <Badge
                         key={tag}
                         variant="secondary"
-                        className="h-auto rounded-lg bg-white px-2.5 py-1 text-[11px] font-medium text-[#555d73] hover:bg-white"
+                        className="h-auto rounded-lg bg-white px-2.5 py-1 text-[11px] font-medium text-[#555d73] hover:bg-white dark:bg-slate-800/88 dark:text-slate-300 dark:hover:bg-slate-800"
                       >
                         {tag}
                       </Badge>
@@ -296,7 +294,7 @@ export default async function JobDetailPage({
               </CardContent>
             </Card>
 
-            <Card className="rounded-[22px] border-white/80 bg-white/92 py-0 shadow-[0_10px_24px_-24px_rgba(17,24,39,0.14)]">
+            <Card className="rounded-[22px] border-white/80 bg-white/92 py-0 shadow-[0_10px_24px_-24px_rgba(17,24,39,0.14)] dark:border-slate-700/70 dark:bg-slate-900/78">
               <CardHeader className="px-5 py-5">
                 <CardTitle className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#5f667b]">
                   About The Company
@@ -331,7 +329,7 @@ export default async function JobDetailPage({
                     rel="noopener noreferrer"
                     className={cn(
                       buttonVariants({ variant: "outline", size: "lg" }),
-                      "h-11 w-full rounded-xl border-[#d9dff0] bg-white text-sm text-[#4b41e7] hover:bg-[#f5f7ff]",
+                      "h-11 w-full rounded-xl border-[#d9dff0] bg-white text-sm text-[#4b41e7] hover:bg-[#f5f7ff] dark:border-slate-700/70 dark:bg-slate-900/78 dark:text-indigo-200 dark:hover:bg-slate-800/86",
                     )}
                   >
                     View Company Profile
@@ -365,7 +363,7 @@ function DetailSectionCard({
   children: ReactNode;
 }) {
   return (
-    <Card className="rounded-[22px] border-white/80 bg-white/92 py-0 shadow-[0_10px_24px_-24px_rgba(17,24,39,0.14)]">
+    <Card className="rounded-[22px] border-white/80 bg-white/92 py-0 shadow-[0_10px_24px_-24px_rgba(17,24,39,0.14)] dark:border-slate-700/70 dark:bg-slate-900/78">
       <CardContent className="px-5 py-5 sm:px-6 sm:py-6">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
@@ -392,7 +390,7 @@ function MetricPair({ label, value }: { label: string; value: string }) {
 
 function MetaBlock({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-[#edf0f7] bg-[#fbfcff] px-4 py-3">
+    <div className="rounded-xl border border-[#edf0f7] bg-[#fbfcff] px-4 py-3 dark:border-slate-700/70 dark:bg-slate-950/35">
       <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#7a8096]">{label}</p>
       <p className="mt-2 text-sm font-medium text-[#303850]">{value}</p>
     </div>
@@ -598,7 +596,7 @@ function buildJobPostingJsonLd(job: JobDetail) {
     jobLocationType: job.workType?.toLowerCase().includes("remote") ? "TELECOMMUTE" : undefined,
     industry: job.category,
     directApply: false,
-    url: `${siteUrl}/jobs/${job.slug}`,
+    url: `${siteUrl}/jobs/${job.id}`,
   };
 }
 

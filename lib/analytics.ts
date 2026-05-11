@@ -7,12 +7,16 @@ export type AnalyticsEventName =
   | "filter_used"
   | "apply_clicked"
   | "category_clicked"
-  | "newsletter_interest";
+  | "newsletter_interest"
+  | "career_tool_opened"
+  | "career_tool_submitted"
+  | "career_tool_completed"
+  | "career_tool_failed";
 
 export type TrackEventPayload = {
   event_name: AnalyticsEventName;
   path?: string;
-  job_id?: number;
+  job_id?: string;
   metadata?: Record<string, unknown>;
 };
 

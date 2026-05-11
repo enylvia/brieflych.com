@@ -44,7 +44,12 @@ export function AdminSurface({
   children: ReactNode;
 }) {
   return (
-    <Card className={cn("admin-surface rounded-2xl border-0 bg-white/96 ring-1 ring-[#dce9ff]", className)}>
+    <Card
+      className={cn(
+        "admin-surface rounded-2xl border-0 bg-white/96 ring-1 ring-[#dce9ff] dark:bg-slate-900/88 dark:ring-slate-700/70",
+        className,
+      )}
+    >
       <CardContent className={cn("p-6", contentClassName)}>
         {title || action ? (
           <div className="mb-5 flex items-start justify-between gap-4">
@@ -85,6 +90,10 @@ export function MetricCard({
         tone === "primary" && "bg-gradient-to-br from-white to-[#eef2ff]",
         tone === "success" && "bg-gradient-to-br from-white to-[#edfdf4]",
         tone === "warning" && "bg-gradient-to-br from-white to-[#fff3eb]",
+        "dark:bg-slate-900/88 dark:from-slate-900/95 dark:to-slate-800/82 dark:ring-slate-700/70",
+        tone === "primary" && "dark:to-indigo-950/50",
+        tone === "success" && "dark:to-emerald-950/36",
+        tone === "warning" && "dark:to-amber-950/34",
       )}
     >
       <CardContent className="p-5">

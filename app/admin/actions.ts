@@ -193,12 +193,13 @@ export async function runPipelineAction(formData: FormData) {
 export async function updateJobStatusAction(formData: FormData) {
   const redirectTo = String(formData.get("redirectTo") || "/admin/jobs");
   const jobId = String(formData.get("jobId") || "");
+  const encodedJobId = encodeURIComponent(jobId);
   const statusAction = String(formData.get("statusAction") || "");
 
   const pathMap: Record<string, string> = {
-    approve: `/internal/jobs/${jobId}/approve`,
-    reject: `/internal/jobs/${jobId}/reject`,
-    archive: `/internal/jobs/${jobId}/archive`,
+    approve: `/internal/jobs/${encodedJobId}/approve`,
+    reject: `/internal/jobs/${encodedJobId}/reject`,
+    archive: `/internal/jobs/${encodedJobId}/archive`,
   };
 
   if (!pathMap[statusAction]) {

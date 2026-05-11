@@ -25,6 +25,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.6,
     },
+    {
+      url: `${siteUrl}/career-tools/ats-score`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${siteUrl}/career-tools/job-match`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
   ];
 
   try {
@@ -34,7 +46,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
 
     const jobRoutes: MetadataRoute.Sitemap = catalog.items.map((job) => ({
-      url: `${siteUrl}/jobs/${job.slug}`,
+      url: `${siteUrl}/jobs/${job.id}`,
       lastModified: now,
       changeFrequency: "daily",
       priority: 0.8,

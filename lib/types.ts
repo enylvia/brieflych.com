@@ -8,7 +8,7 @@ export type JobStatus =
   | "archived";
 
 export type JobListItem = {
-  id: number;
+  id: string;
   slug: string;
   title: string;
   company: string;
@@ -62,7 +62,7 @@ export type AdminOverview = {
 };
 
 export type AnalyticsTopViewedJob = {
-  jobId: number;
+  jobId: string;
   title: string;
   company: string;
   viewCount: number;
@@ -109,7 +109,7 @@ export type AdminJobDetail = JobDetail & {
   scraperType: string;
   collectedAt: string;
   parseConfidence: number;
-  duplicateMatch?: number;
+  duplicateMatch?: string;
   duplicateReference?: string;
   extractedEntities: string[];
   workplaceType?: string;

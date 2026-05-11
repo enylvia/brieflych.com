@@ -146,7 +146,7 @@ export default async function Home() {
                     },
                   }}
                   className={cn(
-                    "group rounded-[28px] border border-white/80 bg-[#eef2ff] p-6 shadow-[0_28px_60px_-48px_rgba(17,24,39,0.42)] transition-transform hover:-translate-y-1",
+                    "group rounded-[28px] border border-white/80 bg-[#eef2ff] p-6 shadow-[0_28px_60px_-48px_rgba(17,24,39,0.42)] transition-transform hover:-translate-y-1 dark:border-slate-700/70 dark:bg-slate-900/78",
                     index === 0 && "sm:col-span-2 xl:min-h-[220px]",
                   )}
                 >
@@ -198,9 +198,9 @@ export default async function Home() {
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {latestJobs.map((job) => (
               <Link
-                key={job.slug}
-                href={`/jobs/${job.slug}`}
-                className="group rounded-[28px] border border-white/80 bg-white/90 p-5 shadow-[0_28px_70px_-52px_rgba(17,24,39,0.38)] transition-all hover:-translate-y-1 hover:bg-white"
+                key={job.id}
+                href={`/jobs/${job.id}`}
+                className="group rounded-[28px] border border-white/80 bg-white/90 p-5 shadow-[0_28px_70px_-52px_rgba(17,24,39,0.38)] transition-all hover:-translate-y-1 hover:bg-white dark:border-slate-700/70 dark:bg-slate-900/78 dark:hover:bg-slate-800/88"
               >
                 <div className="flex h-full flex-col gap-5">
                   <div className="flex items-start gap-4">
@@ -235,7 +235,7 @@ export default async function Home() {
                   </div>
 
                   <div className="mt-auto flex items-center justify-between gap-3 border-t border-[#eef1f8] pt-4">
-                    <Badge className="h-auto rounded-full bg-[#eef2ff] px-3 py-1 text-xs text-[#4b41e7] hover:bg-[#eef2ff]">
+                    <Badge className="h-auto rounded-full bg-[#eef2ff] px-3 py-1 text-xs text-[#4b41e7] hover:bg-[#eef2ff] dark:bg-indigo-500/16 dark:text-indigo-200 dark:hover:bg-indigo-500/20">
                       {job.category}
                     </Badge>
                     <span className="inline-flex items-center gap-1 text-sm font-semibold text-[#4b41e7]">
@@ -279,7 +279,7 @@ export default async function Home() {
                     action: "subscribe_button_clicked",
                   },
                 }}
-                className="h-12 rounded-xl bg-white px-6 text-xs font-black uppercase tracking-[0.16em] text-[#4b41e7] opacity-90 shadow-[0_18px_36px_-26px_rgba(15,23,42,0.5)] transition-opacity hover:opacity-100"
+                className="h-12 rounded-xl bg-white px-6 text-xs font-black uppercase tracking-[0.16em] text-[#4b41e7] opacity-90 shadow-[0_18px_36px_-26px_rgba(15,23,42,0.5)] transition-opacity hover:opacity-100 dark:bg-slate-950/86 dark:text-indigo-200"
               >
                 Subscribe
               </AnalyticsButton>
